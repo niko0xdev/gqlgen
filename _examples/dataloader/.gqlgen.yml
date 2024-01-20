@@ -1,0 +1,5 @@
+models:
+  Order:
+    model: github.com/niko0xdev/gqlgen/_examples/dataloader.Order
+  Customer:
+    model: github.com/niko0xdev/gqlgen/_examples/dataloader.Customer

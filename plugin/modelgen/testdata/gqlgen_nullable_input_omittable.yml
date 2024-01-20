@@ -1,0 +1,23 @@
+schema:
+  - "testdata/schema.graphql"
+
+exec:
+  filename: out_nullable_input_omittable/ignored.go
+model:
+  filename: out_nullable_input_omittable/generated.go
+
+nullable_input_omittable: true
+
+models:
+  ExistingModel:
+    model: github.com/niko0xdev/gqlgen/plugin/modelgen/out_nullable_input_omittable.ExistingModel
+  ExistingInput:
+    model: github.com/niko0xdev/gqlgen/plugin/modelgen/out_nullable_input_omittable.ExistingInput
+  ExistingEnum:
+    model: github.com/niko0xdev/gqlgen/plugin/modelgen/out_nullable_input_omittable.ExistingEnum
+  ExistingInterface:
+    model: github.com/niko0xdev/gqlgen/plugin/modelgen/out_nullable_input_omittable.ExistingInterface
+  ExistingUnion:
+    model: github.com/niko0xdev/gqlgen/plugin/modelgen/out_nullable_input_omittable.ExistingUnion
+  ExistingType:
+    model: github.com/niko0xdev/gqlgen/plugin/modelgen/out_nullable_input_omittable.ExistingType

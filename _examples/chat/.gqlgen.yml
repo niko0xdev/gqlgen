@@ -1,0 +1,3 @@
+models:
+  Chatroom:
+    model: github.com/niko0xdev/gqlgen/_examples/chat.Chatroom
