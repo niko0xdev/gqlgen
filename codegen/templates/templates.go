@@ -2,6 +2,7 @@ package templates
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"go/types"
 	"io/fs"
@@ -201,6 +202,7 @@ func Funcs() template.FuncMap {
 		"quote":              strconv.Quote,
 		"rawQuote":           rawQuote,
 		"dump":               Dump,
+		"jsonDump":           jsonDump,
 		"ref":                ref,
 		"ts":                 TypeIdentifier,
 		"call":               Call,
@@ -618,6 +620,19 @@ func Dump(val interface{}) string {
 	default:
 		panic(fmt.Errorf("unsupported type %T", val))
 	}
+}
+
+func jsonDump(v interface{}) string {
+	// Convert the value to JSON
+	data, err := json.MarshalIndent(v, "", "    ")
+	if err != nil {
+		fmt.Println("Error marshaling to JSON:", err)
+
+		return ""
+	}
+
+	// Print the indented JSON
+	return string(data)
 }
 
 func prefixLines(prefix, s string) string {
