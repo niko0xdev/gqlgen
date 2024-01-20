@@ -68,7 +68,8 @@ func (m *Plugin) generateSingleFile(data *codegen.Data) error {
 				continue
 			}
 
-			resolver := Resolver{o, f, nil, "", `panic("not implemented")`, nil}
+			implementFunc := buildImplementationFunc(o, f)
+			resolver := Resolver{o, f, nil, "", `panic("not implemented")`, nil, implementFunc}
 			file.Resolvers = append(file.Resolvers, &resolver)
 		}
 	}
@@ -131,11 +132,13 @@ func (m *Plugin) generatePerSchema(data *codegen.Data) error {
 			structName := templates.LcFirst(o.Name) + templates.UcFirst(data.Config.Resolver.Type)
 			comment := strings.TrimSpace(strings.TrimLeft(rewriter.GetMethodComment(structName, f.GoFieldName), `\`))
 			implementation := strings.TrimSpace(rewriter.GetMethodBody(structName, f.GoFieldName))
-			if implementation == "" {
-				// use default implementation, if no implementation was previously used
-				implementation = fmt.Sprintf("panic(fmt.Errorf(\"not implemented: %v - %v\"))", f.GoFieldName, f.Name)
-			}
-			resolver := Resolver{o, f, rewriter.GetPrevDecl(structName, f.GoFieldName), comment, implementation, nil}
+			// if implementation == "" {
+			// 	// use default implementation, if no implementation was previously used
+			// 	implementation = fmt.Sprintf("panic(fmt.Errorf(\"not implemented: %v - %v\"))", f.GoFieldName, f.Name)
+			// }
+
+			implementFunc := buildImplementationFunc(o, f)
+			resolver := Resolver{o, f, rewriter.GetPrevDecl(structName, f.GoFieldName), comment, implementation, nil, implementFunc}
 			var implExists bool
 			for _, p := range data.Plugins {
 				rImpl, ok := p.(plugin.ResolverImplementer)
@@ -251,6 +254,29 @@ func (f *File) Imports() string {
 	return ""
 }
 
+type ResolverType string
+
+const (
+	GetOne  ResolverType = "GET_ONE"
+	GetList ResolverType = "GET_LIST"
+	Create  ResolverType = "CREATE"
+	Update  ResolverType = "UPDATE"
+	Delete  ResolverType = "DELETE"
+	NA      ResolverType = "NA"
+)
+
+type ResolverFuncFieldMap struct {
+	ModelField string
+	DtoField   string
+}
+
+type ResolverImplementationFunc struct {
+	Type   ResolverType
+	Model  string
+	Return string
+	Fields []ResolverFuncFieldMap
+}
+
 type Resolver struct {
 	Object               *codegen.Object
 	Field                *codegen.Field
@@ -258,13 +284,20 @@ type Resolver struct {
 	Comment              string
 	ImplementationStr    string
 	ImplementationRender func(r *codegen.Field) string
+	ImplementationFunc   *ResolverImplementationFunc
 }
 
 func (r *Resolver) Implementation() string {
 	if r.ImplementationRender != nil {
 		return r.ImplementationRender(r.Field)
 	}
-	return r.ImplementationStr
+
+	implStr := r.ImplementationStr
+	if implStr == "" {
+		implStr = fmt.Sprintf("panic(fmt.Errorf(\"not implemented: %v - %v\"))", r.Field.GoFieldName, r.Field.Name)
+	}
+
+	return implStr
 }
 
 func gqlToResolverName(base string, gqlname, filenameTmpl string) string {
@@ -283,4 +316,74 @@ func readResolverTemplate(customResolverTemplate string) string {
 		panic(err)
 	}
 	return string(contentBytes)
+}
+
+func isPlural(word string) bool {
+	suffixes := []string{"s", "es"}
+
+	for _, suffix := range suffixes {
+		if strings.HasSuffix(word, suffix) {
+			return true
+		}
+	}
+
+	return false
+}
+
+func buildImplementationFunc(object *codegen.Object, field *codegen.Field) *ResolverImplementationFunc {
+	resolverType := detectResolverType(object, field)
+	modelName := field.GoFieldName
+	returnType := field.Type.NamedType
+
+	if resolverType == Delete {
+		modelName = strings.Replace(field.GoFieldName, "Delete", "", -1)
+	}
+
+	if resolverType == Create {
+		modelName = strings.Replace(field.GoFieldName, "Create", "", -1)
+	}
+
+	if resolverType == Update {
+		modelName = strings.Replace(field.GoFieldName, "Update", "", -1)
+	}
+
+	return &ResolverImplementationFunc{
+		Type:   resolverType,
+		Model:  modelName,
+		Return: returnType,
+		Fields: []ResolverFuncFieldMap{},
+	}
+}
+
+func detectResolverType(object *codegen.Object, field *codegen.Field) ResolverType {
+	resolverName := field.Name
+	hasId := false
+
+	for _, arg := range field.Args {
+		if arg.Name == "id" {
+			hasId = true
+		}
+	}
+
+	if strings.HasSuffix(resolverName, "Create") {
+		return Create
+	}
+
+	if strings.HasSuffix(resolverName, "Update") {
+		return Update
+	}
+
+	if strings.HasSuffix(resolverName, "Delete") {
+		return Delete
+	}
+
+	if !hasId && isPlural(resolverName) {
+		return GetList
+	}
+
+	if hasId {
+		return GetOne
+	}
+
+	return NA
 }

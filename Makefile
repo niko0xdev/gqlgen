@@ -10,10 +10,10 @@ patch:
 	- $(eval patch=$(shell echo $$(($(patch)+1))))
 	- @echo "New Version: $(major).$(minor).$(patch)"
 	- @printf $(major).$(minor).$(patch) > VERSION
-	- git tag "$(major).$(minor).$(patch)" -m "Patch version update: $(major).$(minor).$(patch)"
-	- git push origin $(major).$(minor).$(patch)
 	- git add VERSION
+	- git add --all
 	- git commit -m "Bump version to $(major).$(minor).$(patch)"
+	- git tag "$(major).$(minor).$(patch)" -m "Patch version update: $(major).$(minor).$(patch)"
 	- git push
 
 minor:
