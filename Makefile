@@ -21,12 +21,11 @@ minor:
 	- @echo "Current Version: $(software_version)"
 	- $(eval minor=$(shell echo $$(($(minor)+1))))
 	- @echo "New Version: $(major).$(minor).0"
-	- @printf $(major).$(minor).0 > VERSION
-	- git tag "$(major).$(minor).$(patch)" -m "Minor version update: $(major).$(minor).$(patch)"
-	- git push origin $(major).$(minor).$(patch)
-	- git add VERSION
-	- git commit -m "Bump version to $(major).$(minor).$(patch)"
-	- git push
+	- cp VERSION graphql/VERSION
+	- git add --all
+	- git commit -m "Bump version to $(major).$(minor).0"
+	- git tag "$(major).$(minor).$(patch)" -m "Minor version update: $(major).$(minor).0"
+	- git push origin $(major).$(minor).0 $(git branch --show-current)
 
 major:
 	- @echo "BUMPING MAJOR"
@@ -34,8 +33,8 @@ major:
 	- $(eval major=$(shell echo $$(($(major)+1))))
 	- @echo "New Version: $(major).0.0"
 	- @printf $(major).0.0 > VERSION
-	- git tag "$(major).$(minor).$(patch)" -m "Major version update: $(major).$(minor).$(patch)"
-	- git push origin $(major).$(minor).$(patch)
-	- git add VERSION
-	- git commit -m "Bump version to $(major).$(minor).$(patch)"
-	- git push
+	- cp VERSION graphql/VERSION
+	- git add --all
+	- git commit -m "Bump version to $(major).0.0"
+	- git tag "$(major).0.0" -m "Major version update: $(major).0.0"
+	- git push origin $(major).0.0 $(git branch --show-current)
