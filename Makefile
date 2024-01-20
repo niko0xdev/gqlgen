@@ -12,6 +12,9 @@ patch:
 	- @printf $(major).$(minor).$(patch) > VERSION
 	- git tag "$(major).$(minor).$(patch)" -m "Patch version update: $(major).$(minor).$(patch)"
 	- git push origin $(major).$(minor).$(patch)
+	- git add VERSION
+	- git commit -m "Bump version to $(major).$(minor).$(patch)"
+	- git push
 
 minor:
 	- @echo "BUMPING MINOR"
@@ -21,6 +24,9 @@ minor:
 	- @printf $(major).$(minor).0 > VERSION
 	- git tag "$(major).$(minor).$(patch)" -m "Minor version update: $(major).$(minor).$(patch)"
 	- git push origin $(major).$(minor).$(patch)
+	- git add VERSION
+	- git commit -m "Bump version to $(major).$(minor).$(patch)"
+	- git push
 
 major:
 	- @echo "BUMPING MAJOR"
@@ -30,3 +36,6 @@ major:
 	- @printf $(major).0.0 > VERSION
 	- git tag "$(major).$(minor).$(patch)" -m "Major version update: $(major).$(minor).$(patch)"
 	- git push origin $(major).$(minor).$(patch)
+	- git add VERSION
+	- git commit -m "Bump version to $(major).$(minor).$(patch)"
+	- git push
