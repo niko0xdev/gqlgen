@@ -1,3 +1,15 @@
 package graphql
 
-const Version = "v0.17.42-dev"
+import (
+	"log"
+	"os"
+)
+
+func GetVersion() string {
+	content, err := os.ReadFile(string("../../VERSION"))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return string(content)
+}

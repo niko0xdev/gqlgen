@@ -189,7 +189,7 @@ func (m *Plugin) generatePerSchema(data *codegen.Data) error {
 			)
 			if !data.Config.OmitGQLGenVersionInFileNotice {
 				fileNotice.WriteString(` version `)
-				fileNotice.WriteString(graphql.Version)
+				fileNotice.WriteString(graphql.GetVersion())
 			}
 		}
 

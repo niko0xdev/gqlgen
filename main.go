@@ -198,7 +198,7 @@ var versionCmd = &cli.Command{
 	Name:  "version",
 	Usage: "print the version string",
 	Action: func(ctx *cli.Context) error {
-		fmt.Println(graphql.Version)
+		fmt.Println(graphql.GetVersion())
 		return nil
 	},
 }
@@ -210,7 +210,7 @@ func main() {
 	app.Description = "This is a library for quickly creating strictly typed graphql servers in golang. See https://gqlgen.com/ for a getting started guide."
 	app.HideVersion = true
 	app.Flags = generateCmd.Flags
-	app.Version = graphql.Version
+	app.Version = graphql.GetVersion()
 	app.Before = func(context *cli.Context) error {
 		if context.Bool("verbose") {
 			log.SetFlags(0)
