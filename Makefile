@@ -14,8 +14,7 @@ patch:
 	- git add --all
 	- git commit -m "Bump version to $(major).$(minor).$(patch)"
 	- git tag "$(major).$(minor).$(patch)" -m "Patch version update: $(major).$(minor).$(patch)"
-	- git push origin $(major).$(minor).$(patch)
-	- git push
+	- git push origin $(major).$(minor).$(patch) $(git branch --show-current)
 
 minor:
 	- @echo "BUMPING MINOR"
