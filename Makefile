@@ -10,7 +10,7 @@ patch:
 	- $(eval patch=$(shell echo $$(($(patch)+1))))
 	- @echo "New Version: $(major).$(minor).$(patch)"
 	- @printf $(major).$(minor).$(patch) > VERSION
-	- git add VERSION
+	- cp VERSION graphql/VERSION
 	- git add --all
 	- git commit -m "Bump version to $(major).$(minor).$(patch)"
 	- git tag "$(major).$(minor).$(patch)" -m "Patch version update: $(major).$(minor).$(patch)"

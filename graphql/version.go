@@ -6,7 +6,7 @@ import (
 )
 
 func GetVersion() string {
-	content, err := os.ReadFile(string("../../VERSION"))
+	content, err := os.ReadFile(string("VERSION"))
 	if err != nil {
 		log.Fatal(err)
 	}
