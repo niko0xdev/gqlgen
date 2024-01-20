@@ -197,6 +197,7 @@ func Funcs() template.FuncMap {
 	return template.FuncMap{
 		"ucFirst":            UcFirst,
 		"lcFirst":            LcFirst,
+		"startWith":          startWith,
 		"quote":              strconv.Quote,
 		"rawQuote":           rawQuote,
 		"dump":               Dump,
@@ -237,6 +238,10 @@ func LcFirst(s string) string {
 	r := []rune(s)
 	r[0] = unicode.ToLower(r[0])
 	return string(r)
+}
+
+func startWith(s string, prefix string) bool {
+	return strings.HasPrefix(s, prefix)
 }
 
 func isDelimiter(c rune) bool {
